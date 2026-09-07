@@ -16,9 +16,11 @@ import NotFound from '@/pages/NotFound'
 import { Toaster } from '@/components/ui/toaster'
 
 export default function App() {
+  const basename = import.meta.env.BASE_URL || '/'
+
   return (
     <AuthProvider>
-      <Router>
+      <Router basename={basename}>
         <Routes>
           {/* Public Portfolio Live Demo Landing Page */}
           <Route path="/demo" element={<PublicDemo />} />

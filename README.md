@@ -3,10 +3,12 @@
 > **Automated telemetry verification, diagnostic log processing, statistical anomaly detection, and AI-assisted root-cause analysis for connected vehicles.**  
 > Built as an engineering proof-of-concept for the **GlobalLogic Opportunity Showcase — AI Developer & Data Scientist** role.
 
+🔗 **Live Demo:** [https://daniloaflima.github.io/telemetry-insight-vehicle-telemetry-verification-poc/](https://daniloaflima.github.io/telemetry-insight-vehicle-telemetry-verification-poc/) (Public simulation route: [`/demo`](https://daniloaflima.github.io/telemetry-insight-vehicle-telemetry-verification-poc/demo))
+
 [![React](https://img.shields.io/badge/Frontend-React%2018%20%7C%20TypeScript%20%7C%20Vite%20%7C%20Tailwind-blue)](#tech-stack)
 [![PocketBase](https://img.shields.io/badge/Backend-Skip%20Cloud%20(PocketBase)-orange)](#architecture)
 [![ML](https://img.shields.io/badge/Analytics-Statistical%20IQR%20%7C%20Heuristic%20Classifier-green)](#core-pipeline)
-[![Live Demo](https://img.shields.io/badge/Public%20Demo-Available%20at%20%2Fdemo-brightgreen)](#live-demonstration)
+[![Live Demo](https://img.shields.io/badge/Public%20Demo-GitHub%20Pages-brightgreen)](https://daniloaflima.github.io/telemetry-insight-vehicle-telemetry-verification-poc/demo)
 
 ---
 
@@ -98,6 +100,7 @@ This prototype demonstrates direct competencies sought in the **GlobalLogic Stud
 
 The repository includes a standalone **Public Demo** view accessible without authentication:
 
+- **Live URL:** [https://daniloaflima.github.io/telemetry-insight-vehicle-telemetry-verification-poc/demo](https://daniloaflima.github.io/telemetry-insight-vehicle-telemetry-verification-poc/demo)
 - **Path:** `/demo`
 - **Features:**
   - Dynamic CAN stream simulation with toggleable playback speed (`1x`, `5x`, `20x`).
