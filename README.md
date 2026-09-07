@@ -1,143 +1,150 @@
 # Telemetry Insight — Vehicle Telemetry Verification POC
 
-An enterprise-grade Automotive Telemetry Verification & Data Cleaning Proof-of-Concept (POC) designed for modern connected vehicles and ECU software verification.
+> **Automated telemetry verification, diagnostic log processing, statistical anomaly detection, and AI-assisted root-cause analysis for connected vehicles.**  
+> Built as an engineering proof-of-concept for the **GlobalLogic Opportunity Showcase — AI Developer & Data Scientist** role.
+
+[![React](https://img.shields.io/badge/Frontend-React%2018%20%7C%20TypeScript%20%7C%20Vite%20%7C%20Tailwind-blue)](#tech-stack)
+[![PocketBase](https://img.shields.io/badge/Backend-Skip%20Cloud%20(PocketBase)-orange)](#architecture)
+[![ML](https://img.shields.io/badge/Analytics-Statistical%20IQR%20%7C%20Heuristic%20Classifier-green)](#core-pipeline)
+[![Live Demo](https://img.shields.io/badge/Public%20Demo-Available%20at%20%2Fdemo-brightgreen)](#live-demonstration)
+
+---
+
+## Executive Summary
+
+Modern connected vehicles generate continuous, high-frequency telemetry streams across CAN, LIN, and Ethernet buses. Validating vehicle software against diagnostic logs typically involves tedious manual inspection of gigabyte-scale trace files.
+
+**Telemetry Insight** solves this by automating:
+1. **Diagnostic Log Ingestion:** Support for raw CAN/LIN traces, standard CSV exports, and structured JSON logs.
+2. **Statistical Outlier Detection:** Configurable Interquartile Range (IQR) filtering (default 2.5x threshold) and 3-sigma statistical thresholds to clean noise and flag out-of-envelope values.
+3. **Multi-Signal Anomaly Classification:** Heuristic classifier categorizing issues by subsystem (`BATTERY`, `MOTOR`, `THERMAL`, `COMMUNICATION`, `BRAKE`, `SUSPENSION`) and severity (`CRITICAL`, `WARNING`, `INFO`).
+4. **Interactive Multi-Run Comparison:** Side-by-side metric diffing (duration, sampling frequency, anomaly rate, delta calculations) between software runs.
+5. **AI-Assisted Root Cause Analysis:** Skip Cloud native LLM integration generating professional markdown verification summaries and diagnostic recommendations.
+6. **Executive PDF Reports:** Formatted diagnostic report generation with executive summaries and anomaly breakdowns.
+
+---
 
 ## Screenshots
 
-### Verification Dashboard
-![Dashboard](src/assets/image-b8186.png)
-*Verification dashboard with real-time KPIs and anomaly trends*
+Visual walkthrough of the Telemetry Insight Vehicle Telemetry Verification POC:
 
-### Public Portfolio Demo Hero
-![Demo Hero](src/assets/image-e28b0.png)
-*Public portfolio demo page at /demo, tailored to the GlobalLogic opportunity*
+### 1. Verification Dashboard & KPI Overview
+> Real-time software verification dashboard displaying key diagnostic indicators (logs analyzed, anomalies detected, statistical IQR outlier rate, pipeline latency) and anomalous spike trends across CAN/LIN telemetry sessions.
 
-### Live CAN Telemetry Simulation
-![Live CAN Simulation](src/assets/image-4b0fe.png)
-*Live CAN telemetry stream simulation with statistical anomaly detection*
+![Telemetry Insight Verification Dashboard](src/assets/image-b8186.png)
 
 ---
 
-The platform ingests raw CAN/LIN bus logs, executes real-time IQR-based data cleaning and timestamp synchronization, classifies transient anomalies (voltage spikes, sync loss, out-of-range sensor values, electromagnetic noise), and provides time-series dashboards, side-by-side comparison matrices, AI verification diagnostic summaries, and exportable engineering verification reports.
+### 2. Public Live Demo Showcase (`/demo`)
+> Interactive public showcase presenting the GlobalLogic vehicle telemetry challenge, highlighting the engineering stack (Python, Pandas, NumPy, Scikit-learn, Docker, Skip Cloud Native AI Agents) and core verification benchmarks (~87% classification accuracy, ~5% anomaly baseline, 2.5x IQR envelope).
 
-> **Portfolio Project:** Designed by Danilo Lima for the **GlobalLogic AI Developer & Data Scientist** role (focus on connected vehicle measurement analytics, embedded protocol parsing, and predictive anomaly classification).
-
----
-
-## 🚀 Key Features
-
-- **Multi-Format Log Ingestion:** Support for raw `.csv`, `.txt`, `.log`, `.asc`, and `.blf` CAN/LIN bus telemetry files.
-- **Configurable IQR Cleaning Pipeline:** Real-time data cleaning, outlier rejection using Interquartile Range (IQR) with adjustable tolerance multiplier (1.0x to 4.0x), timestamp normalization (50 Hz / 20ms baseline), and missing value imputation.
-- **Anomaly Detection & Classification:** Statistical baseline heuristics that identify and categorize bus anomalies into critical, high, medium, and low severity tiers:
-  - `Voltage Spike` (CAN_ECU_BattVoltage transient overvoltage violating ISO 7637-2)
-  - `Sync Loss` (CAN_WheelSpeed_FL frame drop with inter-frame delay > 120ms)
-  - `Out of Range` (CAN_EngineCoolant_Temp exceeding safe thermal thresholds)
-  - `High Noise` (LIN_SteeringSensor_Angle electromagnetic jitter with degraded SNR)
-- **Time-Series Visualization:** Interactive multi-channel signal charts rendered with Recharts, highlighting nominal envelopes, threshold bounds, and exact anomaly timestamps.
-- **Side-by-Side Comparison Screen:** Select any two verification runs to analyze differences in frame count, outlier frequency, model precision, processing time, and anomaly catalog variations.
-- **Native Skip Cloud AI Diagnostic Summaries:** Automotive Telemetry Diagnostic Agent (`telemetry-diagnostic-agent`) generating structured natural-language assessments:
-  1. Overall Health Assessment & bus nominal conformance rate
-  2. Most Critical Anomalies identification
-  3. Likely Root Causes (inductive switching, CAN bus contention, thermal delta)
-  4. Recommended Next Steps for Software and HIL/SIL verification
-- **Interactive Live Simulation (`/demo`):** Public sandbox allowing recruiters and engineers to test the full pipeline without credentials, adjust IQR thresholds, trigger simulated telemetry runs, and inspect live diagnostics.
-- **Exportable Engineering Reports:** Verification reports with full pipeline statistics, anomaly breakdowns, and AI diagnostics available for instant viewing and clipboard export.
+![Automated Telemetry Verification Demo Hero](src/assets/image-e28b0.png)
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+### 3. Live CAN Telemetry Stream Simulation
+> High-frequency CAN voltage signal stream (`CAN1_ECU_BattVolt` at 50 Hz) simulated in real time through an end-to-end verification pipeline (Ingestion -> IQR Filter -> 50 Hz Timestamping -> ML Classifier), highlighting out-of-envelope voltage deviations and signal spikes.
 
-- **Frontend:** React 19, Vite, TypeScript, Tailwind CSS, Lucide Icons, Shadcn UI primitives (Radix UI), Recharts.
-- **Backend & Database:** PocketBase v0.36 deployed on Skip Cloud.
-  - Relational collections: `logs`, `analises`, `relatorios`, `_pb_users_auth_`.
-  - Row-Level Security (RLS) rules scoped to authenticated engineers.
-- **Server-Side ETL Hooks (`pocketbase/hooks/`):**
-  - `analise_pipeline.js`: Custom REST endpoint (`/backend/v1/analises/processar`) running the ingestion, IQR filtering, anomaly detection heuristics, and report generation.
-  - `ai_resumo.js`: Custom REST endpoint (`/backend/v1/analises/{id}/ai-resumo`) connecting to the Skip Cloud native AI agent.
-  - `gerar_relatorio.js`: Formatted verification report retrieval endpoint.
-- **AI Engine:** Native Skip Cloud AI Agent (`telemetry-diagnostic-agent`) configured with domain automotive verification system prompts, ISO standards baselines, and tool access to analysis records.
+![Live CAN Telemetry Stream Simulation](src/assets/image-4b0fe.png)
 
 ---
 
-## 🔐 Demo Credentials & Live Access
+## System Architecture
 
-- **Public Live Demo:** Navigate to `/demo` for instant no-login simulation.
-- **Full Engineer Portal:**
-  - **URL:** [https://projeto-de-analise-f85f2.shrd00.internal.goskip.dev](https://projeto-de-analise-f85f2.shrd00.internal.goskip.dev) (or frontend app root)
-  - **Demo Email:** `danilolima45@hotmail.com`
-  - **Demo Password:** `Skip@Pass`
-
----
-
-## 📁 Repository Structure
-
-```text
-├── pocketbase/
-│   ├── hooks/
-│   │   ├── ai_resumo.js             # AI diagnostic summary endpoint ($ai.agent)
-│   │   ├── analise_pipeline.js      # Server-side ingestion, IQR ETL & anomaly engine
-│   │   └── gerar_relatorio.js       # Verification report compilation endpoint
-│   └── migrations/
-│       ├── 0001_create_schema.js    # PocketBase collections (logs, analises, relatorios)
-│       ├── 0002_seed_demo_data.js    # Initial vehicle telemetry demo records
-│       ├── 0003_translate_demo_data_to_english.js # English terminology translation
-│       └── 0006_add_ai_summary_and_agent.js      # Telemetry Diagnostic Agent definition
-├── src/
-│   ├── components/
-│   │   ├── Layout.tsx               # Responsive engineering portal shell
-│   │   └── ProtectedRoute.tsx       # Authentication guard
-│   ├── context/
-│   │   └── AuthContext.tsx          # PocketBase session state
-│   ├── hooks/
-│   │   └── use-realtime.ts          # PocketBase SSE live subscriptions
-│   ├── lib/
-│   │   ├── pocketbase/              # PocketBase client SDK & schema mirror
-│   │   └── skipAi.ts                # Skip AI streaming & agent SDK helpers
-│   ├── pages/
-│   │   ├── Dashboard.tsx            # Fleet health metrics, charts, and recent runs
-│   │   ├── AnalisesList.tsx         # Comprehensive list of verification runs
-│   │   ├── AnaliseDetail.tsx        # Signal timeline, anomaly table, AI summary
-│   │   ├── AnaliseCompare.tsx       # Side-by-side run comparison matrix
-│   │   ├── Upload.tsx               # File dropzone & IQR pipeline trigger
-│   │   ├── Relatorios.tsx           # Formal verification reports & export
-│   │   ├── PublicDemo.tsx           # Public interactive sandbox (/demo)
-│   │   └── Login.tsx                # Engineer authentication screen
-│   ├── services/                    # API client services (analises, logs, relatorios)
-│   └── types/telemetry.ts           # TypeScript interfaces for telemetry data
-└── package.json
+```
+[ Connected Vehicle / Test Bench ]
+         │  (CAN / LIN / OBD-II Log Files or Live Simulated Stream)
+         ▼
+[ Ingestion & Normalization Layer ]
+   - Format Sniffing (CSV, JSON, CAN DBC Traces)
+   - Sampling Frequency Normalization (50 Hz / 100 Hz resampling)
+         │
+         ▼
+[ Statistical Cleaning & Outlier Engine ]
+   - 2.5x IQR Envelope Filter
+   - Rolling Z-Score Spike Detector
+   - Signal Integrity / CRC Validation
+         │
+         ▼
+[ Heuristic Anomaly Classifier ]
+   - Voltage Out-of-Envelope (>14.4V or <11.8V)
+   - Thermal Runaway & Temperature Spikes (>65°C)
+   - Motor Current Surges (>180A)
+   - CAN Bus Dropouts & Frame Latency Violations
+         │
+         ├──► [ Real-Time Dashboard (React + Recharts + Tailwind) ]
+         ├──► [ Multi-Run Comparator (Side-by-side metric diff) ]
+         └──► [ AI Root Cause Engine (Skip Cloud native LLM) ]
 ```
 
 ---
 
-## 💻 Local Development Setup
+## Tech Stack & GlobalLogic Alignment
 
-1. **Clone the repository:**
-   ```bash
-   git clone <REPO_URL>
-   cd <REPO_DIRECTORY>
-   ```
+This prototype demonstrates direct competencies sought in the **GlobalLogic Student / Recent Graduate AI Developer & Data Scientist** role:
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Start the development server:**
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-4. **Lint and Typecheck:**
-   ```bash
-   npm run lint
-   npx tsc --noEmit
-   ```
+| Capability | POC Implementation | GlobalLogic Job Fit |
+|---|---|---|
+| **Vehicle Telemetry Domain** | CAN/LIN bus simulation, battery/ECU signal envelopes, automotive fault codes | High domain relevance (automotive diagnostics, connected mobility) |
+| **Data Pipelines & ETL** | Client & server-side streaming ingest, statistical outlier cleaning, timestamp alignment | Python, Pandas, NumPy equivalent data processing patterns |
+| **Statistical & ML Analysis** | IQR filtering, moving window anomaly scoring, multi-subsystem classification | Scikit-learn, statistical modeling, feature engineering |
+| **AI Integration** | Skip Cloud native LLM prompts for root-cause synthesis and mitigation plans | LLM application development, prompt engineering |
+| **Modern Web UI** | React 18, TypeScript, Tailwind CSS, Lucide icons, Recharts | Interactive visualization of large diagnostic datasets |
+| **Cloud & Backend** | Skip Cloud (PocketBase), Realtime subscriptions, REST APIs | Cloud-native backends, microservices, containerized workflows |
 
 ---
 
-## 👤 Author & Acknowledgments
+## Live Demonstration
 
-- **Developer:** Danilo Lima
-- **LinkedIn:** [https://www.linkedin.com/in/danilo-lima-732604318](https://www.linkedin.com/in/danilo-lima-732604318)
-- **Target Opportunity:** GlobalLogic AI Developer & Data Scientist (Automotive & Connected Vehicles Focus)
+The repository includes a standalone **Public Demo** view accessible without authentication:
+
+- **Path:** `/demo`
+- **Features:**
+  - Dynamic CAN stream simulation with toggleable playback speed (`1x`, `5x`, `20x`).
+  - Active ETL verification pipeline stages (CAN/LIN Ingest, IQR Filter, Timestamp Resampling, Anomaly Classifier).
+  - Real-time animated canvas charting of voltage signals against ISO nominal thresholds (`11.8V` – `14.4V`).
+  - Instant anomaly detection counter and rate calculation.
+  - Interactive "Run Demo Verification Pipeline" workflow.
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js 18+
+- npm 9+
+
+### Installation & Run
+
+```bash
+# Clone the repository
+git clone https://github.com/danilo-lima/telemetry-insight.git
+cd telemetry-insight
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+```
+
+Visit `http://localhost:5173/demo` for the public showcase, or navigate to `/login` to sign in.
+
+---
+
+## Verification Pipeline Details
+
+1. **IQR Statistical Filter:**
+   $$\text{IQR} = Q_3 - Q_1$$
+   $$\text{Lower Bound} = Q_1 - 2.5 \times \text{IQR}, \quad \text{Upper Bound} = Q_3 + 2.5 \times \text{IQR}$$
+2. **Subsystem Thresholds:**
+   - **ECU Battery Voltage:** $11.8\text{V} \le V \le 14.4\text{V}$
+   - **Battery Module Temperature:** $T \le 55^\circ\text{C}$ (Warning), $T \ge 65^\circ\text{C}$ (Critical)
+   - **Motor Phase Current:** $I \le 160\text{A}$ (Nominal), $I \ge 185\text{A}$ (Critical Spike)
+
+---
+
+## Author & Contact
+
+- **Danilo Lima** — AI Developer & Data Scientist Candidate
+- Developed as part of the GlobalLogic Automotive Telemetry Verification Opportunity Showcase.
