@@ -19,8 +19,20 @@ export interface LogRecord extends RecordModel {
   atualizado: string
 }
 
-export type AnomalySeverity = 'Baixa' | 'Média' | 'Alta' | 'Crítica'
+export type AnomalySeverity =
+  | 'Low'
+  | 'Medium'
+  | 'High'
+  | 'Critical'
+  | 'Baixa'
+  | 'Média'
+  | 'Alta'
+  | 'Crítica'
 export type AnomalyType =
+  | 'Voltage Spike'
+  | 'Sync Loss'
+  | 'Out of Range'
+  | 'High Noise'
   | 'Pico de Tensão'
   | 'Falha de Sincronização'
   | 'Valor Fora do Intervalo'

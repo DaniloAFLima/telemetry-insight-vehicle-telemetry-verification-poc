@@ -26,10 +26,10 @@ interface QueuedFile {
 }
 
 const stepsLabels = [
-  'Ingerindo arquivos...',
-  'Limpando e normalizando dados...',
-  'Classificando anomalias...',
-  'Gerando relatório...',
+  'Ingesting log files...',
+  'Cleaning & normalizing data (IQR)...',
+  'Classifying anomalies...',
+  'Generating verification report...',
 ]
 
 export default function UploadPage() {
@@ -95,8 +95,8 @@ export default function UploadPage() {
   const handleProcessLogs = async () => {
     if (files.length === 0) {
       toast({
-        title: 'Nenhum arquivo selecionado',
-        description: 'Adicione pelo menos um arquivo de log ou clique em "Usar Dataset Demo".',
+        title: 'No file selected',
+        description: 'Add at least one log file or click "Use Demo Dataset".',
         variant: 'destructive',
       })
       return
@@ -129,7 +129,7 @@ export default function UploadPage() {
       setActiveStep(3)
 
       const processRes = await processLogPipeline({
-        nome: `Análise — ${firstFile.name}`,
+        nome: `Analysis — ${firstFile.name}`,
         log_id: logRecord.id,
         is_demo: false,
         iqr_multiplier: iqrMultiplier,
@@ -139,16 +139,16 @@ export default function UploadPage() {
       await new Promise((r) => setTimeout(r, 400))
 
       toast({
-        title: 'Logs Processados com Sucesso!',
-        description: `${processRes.anomalias_detectadas} anomalias identificadas.`,
+        title: 'Logs Processed Successfully!',
+        description: `${processRes.anomalias_detectadas} anomalies identified.`,
       })
 
       navigate(`/analises/${processRes.analise_id}`)
     } catch (err) {
       console.error(err)
       toast({
-        title: 'Erro durante o processamento',
-        description: 'Houve uma falha ao ingerir e analisar o log veicular.',
+        title: 'Processing failed',
+        description: 'An error occurred while ingesting and analyzing the vehicle log.',
         variant: 'destructive',
       })
       setIsProcessing(false)
@@ -169,7 +169,7 @@ export default function UploadPage() {
 
       const res = await processLogPipeline({
         is_demo: true,
-        nome: 'Análise Demo — Telemetria Veicular (CAN Bus 1)',
+        nome: 'Demo Analysis — Vehicle Telemetry (CAN Bus 1)',
         iqr_multiplier: iqrMultiplier,
         gerar_relatorio: autoReport,
       })
@@ -179,8 +179,8 @@ export default function UploadPage() {
     } catch (err) {
       console.error(err)
       toast({
-        title: 'Falha no processamento demo',
-        description: 'Tente novamente.',
+        title: 'Demo processing failed',
+        description: 'Please try again.',
         variant: 'destructive',
       })
       setIsProcessing(false)
@@ -192,11 +192,11 @@ export default function UploadPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0F172A]">
-          Enviar Logs de Telemetria
+          Upload Telemetry Logs
         </h1>
         <p className="text-sm text-[#64748B] mt-1">
-          Faça upload de capturas CAN/LIN ou arquivos CSV para ingestão, limpeza IQR e detecção
-          heurística de falhas.
+          Upload CAN/LIN captures or CSV files for automated ingestion, IQR cleaning, and heuristic
+          anomaly detection.
         </p>
       </div>
 
@@ -226,13 +226,13 @@ export default function UploadPage() {
             <UploadCloud className="h-8 w-8" />
           </div>
           <h3 className="text-base font-bold text-slate-800">
-            Arraste e solte seus arquivos de log aqui ou clique para selecionar
+            Drag and drop your telemetry log files here or click to browse
           </h3>
           <p className="text-xs text-slate-500 mt-2 max-w-md">
-            Formatos suportados:{' '}
-            <span className="font-semibold text-slate-700">.csv, .txt, .log</span> e capturas
-            CAN/LIN <span className="font-semibold text-slate-700">.asc, .blf</span> (até 20MB por
-            arquivo)
+            Supported formats:{' '}
+            <span className="font-semibold text-slate-700">.csv, .txt, .log</span> and automotive
+            CAN/LIN <span className="font-semibold text-slate-700">.asc, .blf</span> (up to 20MB per
+            file)
           </p>
         </div>
 
@@ -240,7 +240,7 @@ export default function UploadPage() {
         {files.length > 0 && (
           <div className="space-y-2 pt-2">
             <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-              Arquivos Enfileirados ({files.length})
+              Queued Files ({files.length})
             </h4>
             <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden">
               {files.map((item) => (
@@ -261,7 +261,7 @@ export default function UploadPage() {
                     type="button"
                     onClick={() => removeFile(item.id)}
                     className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
-                    aria-label="Remover arquivo"
+                    aria-label="Remove file"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -281,7 +281,7 @@ export default function UploadPage() {
             <div className="flex items-center gap-2">
               <Sliders className="h-4 w-4 text-[#0EA5E9]" />
               <span className="text-sm font-bold text-slate-800">
-                Opções de Limpeza e Processamento
+                ETL Cleaning & Processing Options
               </span>
             </div>
             {isOptionsOpen ? (
@@ -293,24 +293,24 @@ export default function UploadPage() {
 
           {isOptionsOpen && (
             <div className="p-5 space-y-5 bg-white border-t border-slate-200">
-              {/* Formato Select */}
+              {/* File Format Select */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
-                    Formato do arquivo
+                    File Format
                   </label>
                   <select
                     value={format}
                     onChange={(e) => setFormat(e.target.value as LogFormat)}
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0EA5E9] focus:bg-white transition-all font-medium"
                   >
-                    <option value="auto">Auto-detect (Padrão)</option>
-                    <option value="can_lin">Log CAN/LIN</option>
-                    <option value="csv">CSV Telemetria</option>
+                    <option value="auto">Auto-detect (Recommended)</option>
+                    <option value="can_lin">CAN/LIN Automotive Log</option>
+                    <option value="csv">Tabular CSV Telemetry</option>
                   </select>
                   <p className="text-[11px] text-slate-500 mt-1">
-                    Detecta automaticamente canais automotivos comuns (tensão, velocidade,
-                    temperatura).
+                    Automatically identifies common vehicle signals (battery voltage, wheel speed,
+                    engine temp).
                   </p>
                 </div>
 
@@ -318,7 +318,7 @@ export default function UploadPage() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                      Tolerância de Outliers (IQR)
+                      IQR Outlier Tolerance
                     </label>
                     <span className="text-xs font-bold text-[#0EA5E9] tabular-nums bg-sky-50 px-2 py-0.5 rounded-md">
                       {iqrMultiplier.toFixed(1)}x IQR
@@ -334,14 +334,14 @@ export default function UploadPage() {
                     className="w-full accent-[#0EA5E9] cursor-pointer"
                   />
                   <div className="flex justify-between text-[10px] text-slate-400 mt-1">
-                    <span>1.0x (Rigoroso)</span>
-                    <span>2.5x (Recomendado)</span>
-                    <span>5.0x (Permissivo)</span>
+                    <span>1.0x (Strict)</span>
+                    <span>2.5x (Recommended)</span>
+                    <span>5.0x (Permissive)</span>
                   </div>
                 </div>
               </div>
 
-              {/* Checkbox auto report */}
+              {/* Auto Report Checkbox */}
               <div className="pt-2 border-t border-slate-100">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
@@ -351,7 +351,7 @@ export default function UploadPage() {
                     className="h-4 w-4 rounded-md border-slate-300 text-[#0EA5E9] focus:ring-[#0EA5E9] accent-[#0EA5E9]"
                   />
                   <span className="text-sm font-medium text-slate-700">
-                    Gerar relatório de verificação automático
+                    Automatically generate verification report
                   </span>
                 </label>
               </div>
@@ -365,7 +365,7 @@ export default function UploadPage() {
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-sky-800 flex items-center gap-2">
                 <Cpu className="h-4 w-4 text-[#0EA5E9] animate-spin" />
-                Pipeline de Ingestão e Verificação
+                Ingestion & Verification Pipeline
               </span>
               <span className="text-xs font-bold text-sky-700 tabular-nums">
                 {Math.round(((activeStep + 1) / stepsLabels.length) * 100)}%
@@ -412,7 +412,7 @@ export default function UploadPage() {
             className="w-full sm:flex-1 py-3 px-6 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-[#0EA5E9] to-[#0284C7] hover:from-[#0284C7] hover:to-sky-700 active:scale-[0.98] shadow-md shadow-sky-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <Play className="h-4 w-4" />
-            <span>{isProcessing ? 'Processando...' : 'Processar Logs'}</span>
+            <span>{isProcessing ? 'Processing Pipeline...' : 'Process Logs'}</span>
           </button>
 
           <button
@@ -422,7 +422,7 @@ export default function UploadPage() {
             className="w-full sm:w-auto py-3 px-6 rounded-xl font-bold text-sm text-slate-700 bg-slate-100 hover:bg-slate-200 active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-slate-300 disabled:opacity-50"
           >
             <Layers className="h-4 w-4 text-[#0EA5E9]" />
-            <span>Usar Dataset Demo</span>
+            <span>Use Demo Dataset</span>
           </button>
         </div>
       </div>
@@ -432,13 +432,12 @@ export default function UploadPage() {
         <FileCheck className="h-6 w-6 text-sky-400 shrink-0 mt-0.5" />
         <div className="text-xs space-y-1">
           <p className="font-bold text-white text-sm">
-            Compatibilidade com Protocolos Automotivos Globais
+            Compatibility with Global Automotive Protocols
           </p>
           <p className="text-slate-400 leading-relaxed">
-            O algoritmo aceita arquivos raw de telemetria CAN 2.0B / CAN-FD e barramentos LIN. Os
-            dados passam por normalização de amostragem temporal, detecção de outliers baseada em
-            IQR (Interquartile Range) e classificação automatizada de anomalias com métrica de
-            confiança.
+            The pipeline parses raw CAN 2.0B / CAN-FD frames and LIN buses. Input streams undergo 50
+            Hz temporal resampling, Interquartile Range (IQR) outlier filtering, and automated
+            anomaly classification with statistical confidence scoring.
           </p>
         </div>
       </div>

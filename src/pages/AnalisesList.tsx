@@ -8,7 +8,6 @@ import {
   Clock,
   CheckCircle2,
   AlertTriangle,
-  AlertCircle,
   FileText,
   Search,
 } from 'lucide-react'
@@ -29,7 +28,7 @@ export default function AnalisesList() {
       const data = await listAnalises(1, 100)
       setAnalises(data)
     } catch (err) {
-      console.error('Falha ao carregar análises:', err)
+      console.error('Failed to load analyses:', err)
     } finally {
       setLoading(false)
     }
@@ -55,7 +54,7 @@ export default function AnalisesList() {
       setRunningDemo(true)
       const res = await processLogPipeline({
         is_demo: true,
-        nome: 'Análise Demo — Telemetria Veicular (CAN Bus 1)',
+        nome: 'Demo Analysis — Vehicle Telemetry (CAN Bus 1)',
         iqr_multiplier: 2.5,
         gerar_relatorio: true,
       })
@@ -63,8 +62,8 @@ export default function AnalisesList() {
     } catch (err) {
       console.error(err)
       toast({
-        title: 'Erro ao rodar dataset demo',
-        description: 'Tente novamente.',
+        title: 'Error running demo dataset',
+        description: 'Please try again.',
         variant: 'destructive',
       })
     } finally {
@@ -82,10 +81,10 @@ export default function AnalisesList() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0F172A]">
-            Análises de Telemetria
+            Telemetry Analyses
           </h1>
           <p className="text-sm text-[#64748B] mt-1">
-            Histórico completo de verificações e classificações de anomalias veiculares.
+            Complete verification history and classified automotive anomaly logs.
           </p>
         </div>
 
@@ -95,7 +94,7 @@ export default function AnalisesList() {
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0EA5E9] hover:bg-[#0284C7] text-white text-sm font-semibold shadow-md shadow-sky-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" />
-            <span>Nova Análise</span>
+            <span>New Analysis</span>
           </button>
           <button
             onClick={handleRunDemo}
@@ -103,7 +102,7 @@ export default function AnalisesList() {
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-300 hover:border-slate-400 text-slate-700 text-sm font-semibold shadow-xs transition-all disabled:opacity-50"
           >
             <Play className={`h-4 w-4 text-[#0EA5E9] ${runningDemo ? 'animate-spin' : ''}`} />
-            <span>Dataset Demo</span>
+            <span>Run Demo</span>
           </button>
         </div>
       </div>
@@ -113,7 +112,7 @@ export default function AnalisesList() {
         <Search className="h-4 w-4 text-slate-400 shrink-0" />
         <input
           type="text"
-          placeholder="Buscar por nome da análise..."
+          placeholder="Search by analysis name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full text-sm bg-transparent border-none focus:outline-none placeholder-slate-400 text-slate-800"
@@ -124,21 +123,20 @@ export default function AnalisesList() {
       {loading ? (
         <div className="py-20 flex flex-col items-center justify-center text-slate-400 gap-3">
           <Activity className="h-8 w-8 animate-spin text-[#0EA5E9]" />
-          <p className="text-sm">Carregando execuções de análise...</p>
+          <p className="text-sm">Loading verification runs...</p>
         </div>
       ) : filteredAnalises.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-lg mx-auto shadow-xs">
           <FileText className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-slate-800">Nenhuma análise encontrada</h3>
+          <h3 className="text-base font-bold text-slate-800">No analyses found</h3>
           <p className="text-xs text-slate-500 mt-1 mb-5">
-            Faça upload de um arquivo de telemetria ou execute o dataset demo para visualizar
-            métricas.
+            Upload a telemetry log file or launch the demo dataset to view verification metrics.
           </p>
           <button
             onClick={() => navigate('/upload')}
             className="px-5 py-2.5 rounded-xl bg-[#0EA5E9] text-white text-sm font-bold shadow-md shadow-sky-500/20 hover:bg-[#0284C7] transition-all"
           >
-            Enviar Primeiro Log
+            Upload First Log
           </button>
         </div>
       ) : (
@@ -146,9 +144,9 @@ export default function AnalisesList() {
           {filteredAnalises.map((item) => {
             const anomCount = item.anomalias?.length || 0
             const hasAnomalies = anomCount > 0
-            const dateStr = new Date(item.criado).toLocaleDateString('pt-BR', {
-              day: '2-digit',
+            const dateStr = new Date(item.criado).toLocaleDateString('en-US', {
               month: 'short',
+              day: '2-digit',
               year: 'numeric',
               hour: '2-digit',
               minute: '2-digit',
@@ -174,13 +172,13 @@ export default function AnalisesList() {
                         <>
                           <AlertTriangle className="h-3 w-3 text-rose-600" />
                           <span>
-                            {anomCount} Anomalia{anomCount !== 1 ? 's' : ''}
+                            {anomCount} Anomal{anomCount === 1 ? 'y' : 'ies'}
                           </span>
                         </>
                       ) : (
                         <>
                           <CheckCircle2 className="h-3 w-3 text-emerald-600" />
-                          <span>Conforme</span>
+                          <span>Conforming</span>
                         </>
                       )}
                     </span>
@@ -193,7 +191,7 @@ export default function AnalisesList() {
                   </h3>
                   <p className="text-xs text-slate-500 mb-4 line-clamp-2">
                     {item.resumo_limpeza?.protocolo_detectado || 'CAN High-Speed (ISO 11898)'} •{' '}
-                    {item.resumo_limpeza?.linhas_limpas || 1200} amostras
+                    {item.resumo_limpeza?.linhas_limpas || 1200} frames
                   </p>
                 </div>
 
@@ -206,13 +204,13 @@ export default function AnalisesList() {
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 text-slate-600">
-                    <span className="text-slate-400">Precisão:</span>
+                    <span className="text-slate-400">Precision:</span>
                     <span className="font-bold text-[#0EA5E9] tabular-nums">
                       {Math.round((item.precisao_modelo || 0.85) * 100)}%
                     </span>
                   </div>
                   <div className="flex items-center gap-1 text-[#0EA5E9] font-bold group-hover:translate-x-1 transition-transform">
-                    <span>Abrir</span>
+                    <span>Open</span>
                     <ArrowRight className="h-3 w-3" />
                   </div>
                 </div>

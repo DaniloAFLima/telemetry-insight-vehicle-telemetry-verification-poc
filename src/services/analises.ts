@@ -44,7 +44,7 @@ export interface ProcessResult {
 // Fallback client-side pipeline generator in case the custom hook endpoint is blocked or offline
 export async function runClientSidePipeline(params: ProcessLogParams): Promise<AnaliseRecord> {
   const currentUserId = pb.authStore.record?.id
-  if (!currentUserId) throw new Error('Usuário não autenticado.')
+  if (!currentUserId) throw new Error('User not authenticated.')
 
   const totalLines = params.is_demo ? 1420 : Math.floor(950 + Math.random() * 800)
   const iqr = params.iqr_multiplier || 2.5
@@ -68,45 +68,45 @@ export async function runClientSidePipeline(params: ProcessLogParams): Promise<A
       id: 'ano-' + Date.now() + '-1',
       timestamp: '00:01:14.280',
       canal: 'CAN_ECU_BattVoltage',
-      tipo: 'Pico de Tensão',
-      severidade: 'Crítica',
+      tipo: 'Voltage Spike',
+      severidade: 'Critical',
       confianca: 0.95,
       valor_medido: 16.92,
       esperado_intervalo: '11.8V - 14.4V',
-      descricao: 'Pico transiente violou o limiar de sobretensão da ECU.',
+      descricao: 'Transient voltage spike violated ECU overvoltage threshold.',
     },
     {
       id: 'ano-' + Date.now() + '-2',
       timestamp: '00:02:38.510',
       canal: 'CAN_WheelSpeed_FL',
-      tipo: 'Falha de Sincronização',
-      severidade: 'Alta',
+      tipo: 'Sync Loss',
+      severidade: 'High',
       confianca: 0.88,
       valor_medido: 0.0,
       esperado_intervalo: 'Delta t < 20ms',
-      descricao: 'Perda cíclica de quadros de rotação da roda dianteira.',
+      descricao: 'Cyclic frame loss on front-left wheel rotation telemetry.',
     },
     {
       id: 'ano-' + Date.now() + '-3',
       timestamp: '00:04:19.100',
       canal: 'CAN_EngineCoolant_Temp',
-      tipo: 'Valor Fora do Intervalo',
-      severidade: 'Média',
+      tipo: 'Out of Range',
+      severidade: 'Medium',
       confianca: 0.84,
       valor_medido: 114.7,
       esperado_intervalo: '60.0°C - 100.0°C',
-      descricao: 'Temperatura de arrefecimento acima da faixa operacional aceitável.',
+      descricao: 'Coolant temperature above safe operational envelope.',
     },
     {
       id: 'ano-' + Date.now() + '-4',
       timestamp: '00:05:42.920',
       canal: 'LIN_SteeringSensor_Angle',
-      tipo: 'Ruído Excessivo',
-      severidade: 'Baixa',
+      tipo: 'High Noise',
+      severidade: 'Low',
       confianca: 0.81,
       valor_medido: 5.1,
       esperado_intervalo: 'SNR > 18dB',
-      descricao: 'Flutuação de alta frequência detectada pelo filtro IQR.',
+      descricao: 'High-frequency jitter detected by statistical IQR filter.',
     },
   ]
 
@@ -122,23 +122,23 @@ export async function runClientSidePipeline(params: ProcessLogParams): Promise<A
     if (i === 4) {
       val = 16.92
       isAno = true
-      tipoAno = 'Pico de Tensão'
-      sevAno = 'Crítica'
+      tipoAno = 'Voltage Spike'
+      sevAno = 'Critical'
     } else if (i === 9) {
       val = 10.2
       isAno = true
-      tipoAno = 'Falha de Sincronização'
-      sevAno = 'Alta'
+      tipoAno = 'Sync Loss'
+      sevAno = 'High'
     } else if (i === 15) {
       val = 14.8
       isAno = true
-      tipoAno = 'Valor Fora do Intervalo'
-      sevAno = 'Média'
+      tipoAno = 'Out of Range'
+      sevAno = 'Medium'
     } else if (i === 20) {
       val = 13.9
       isAno = true
-      tipoAno = 'Ruído Excessivo'
-      sevAno = 'Baixa'
+      tipoAno = 'High Noise'
+      sevAno = 'Low'
     }
 
     dados_serie_temporal.push({
@@ -153,7 +153,7 @@ export async function runClientSidePipeline(params: ProcessLogParams): Promise<A
   }
 
   const analysisName =
-    params.nome || (params.is_demo ? 'Análise Demo — Telemetria Veicular' : 'Análise de Telemetria')
+    params.nome || (params.is_demo ? 'Demo Analysis — Vehicle Telemetry' : 'Telemetry Analysis')
 
   const analise = await pb.collection('analises').create<AnaliseRecord>({
     usuario_id: currentUserId,
@@ -172,37 +172,37 @@ export async function runClientSidePipeline(params: ProcessLogParams): Promise<A
       await pb.collection('relatorios').create({
         usuario_id: currentUserId,
         analise_id: analise.id,
-        titulo: `Relatório de Verificação — ${analysisName}`,
-        conteudo: `# RELATÓRIO DE VERIFICAÇÃO DE TELEMETRIA VEICULAR
-Projeto Telemetry Insight | GlobalLogic Measurement Analytics POC
-Data: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}
+        titulo: `Verification Report — ${analysisName}`,
+        conteudo: `# VEHICLE TELEMETRY VERIFICATION REPORT
+Telemetry Insight Project | GlobalLogic Measurement Analytics POC
+Date: ${new Date().toLocaleDateString('en-US')} ${new Date().toLocaleTimeString('en-US')}
 
-## 1. Metadados do Run
-- Análise: ${analysisName}
-- Protocolo: ${resumoLimpeza.protocolo_detectado}
-- Amostragem: ${resumoLimpeza.frequencia_amostragem}
-- Tolerância IQR: ${iqr}x
-- Tempo de Processamento: ${analise.tempo_processamento_s}s
-- Precisão Estimada: ${Math.round(analise.precisao_modelo * 100)}%
+## 1. Execution Run Metadata
+- Analysis: ${analysisName}
+- Protocol: ${resumoLimpeza.protocolo_detectado}
+- Sampling: ${resumoLimpeza.frequencia_amostragem}
+- IQR Tolerance: ${iqr}x
+- Processing Time: ${analise.tempo_processamento_s}s
+- Estimated Precision: ${Math.round(analise.precisao_modelo * 100)}%
 
-## 2. Resumo de Limpeza & Normalização (ETL)
-- Linhas Ingeridas: ${resumoLimpeza.linhas_originais.toLocaleString('pt-BR')}
-- Linhas Limpas: ${resumoLimpeza.linhas_limpas.toLocaleString('pt-BR')}
-- Outliers Filtrados: ${resumoLimpeza.outliers_removidos}
-- Timestamps Normalizados: ${resumoLimpeza.timestamps_normalizados}
-- Valores Ausentes Preenchidos: ${resumoLimpeza.valores_nulos_imputados}
+## 2. Cleaning & Normalization Summary (ETL)
+- Raw Ingested Frames: ${resumoLimpeza.linhas_originais.toLocaleString('en-US')}
+- Cleaned Valid Frames: ${resumoLimpeza.linhas_limpas.toLocaleString('en-US')}
+- Outliers Filtered: ${resumoLimpeza.outliers_removidos}
+- Timestamps Normalized: ${resumoLimpeza.timestamps_normalizados}
+- Missing Values Imputed: ${resumoLimpeza.valores_nulos_imputados}
 
-## 3. Anomalias Detectadas (${anomalias.length} eventos)
+## 3. Detected Anomalies (${anomalias.length} events)
 ${anomalias
   .map(
-    (a, i) => `[${i + 1}] ${a.timestamp} | Canal: ${a.canal}
-    Tipo: ${a.tipo} | Severidade: ${a.severidade.toUpperCase()} | Confiança: ${Math.round(a.confianca * 100)}%
-    Diagnóstico: ${a.descricao}`,
+    (a, i) => `[${i + 1}] ${a.timestamp} | Channel: ${a.canal}
+    Type: ${a.tipo} | Severity: ${String(a.severidade).toUpperCase()} | Confidence: ${Math.round(a.confianca * 100)}%
+    Diagnostic: ${a.descricao}`,
   )
   .join('\n\n')}
 
-## 4. Conclusão de Verificação
-Sinal nominal dentro da faixa estabelecida (99.2% de conformidade). Os picos de tensão transitórios demandam inspeção preventiva nos circuitos de filtragem da ECU.`,
+## 4. Verification Verdict
+Nominal signals remained within the nominal range (99.2% conformance). Transient overvoltage spikes require inspection of ECU power conditioning stages.`,
       })
     } catch {
       /* intentionally ignored */

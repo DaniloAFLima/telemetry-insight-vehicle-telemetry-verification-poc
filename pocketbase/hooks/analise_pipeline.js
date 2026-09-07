@@ -9,13 +9,13 @@ routerAdd(
   (e) => {
     const authRecord = e.auth
     if (!authRecord) {
-      return e.json(401, { error: 'Não autorizado.' })
+      return e.json(401, { error: 'Unauthorized.' })
     }
 
     const body = e.requestInfo().body || {}
     const isDemo = Boolean(body.is_demo)
     const logId = body.log_id || null
-    const analysisName = body.nome || (isDemo ? 'Análise Telemetria Demo' : 'Análise de Telemetria')
+    const analysisName = body.nome || (isDemo ? 'Demo Telemetry Analysis' : 'Telemetry Analysis')
     const iqrMultiplier = typeof body.iqr_multiplier === 'number' ? body.iqr_multiplier : 2.5
     const autoReport = body.gerar_relatorio !== false
 
@@ -27,7 +27,7 @@ routerAdd(
       const relatoriosCol = $app.findCollectionByNameOrId('relatorios')
 
       let relatedLog = null
-      let fileName = 'dataset_telemetria_veicular.csv'
+      let fileName = 'vehicle_telemetry_dataset.csv'
       let fileFormat = 'auto'
 
       if (logId) {
@@ -66,49 +66,49 @@ routerAdd(
       }
 
       // 3. Anomaly Classification Engine
-      // Candidate anomaly types: "Pico de Tensão", "Falha de Sincronização", "Valor Fora do Intervalo", "Ruído Excessivo"
+      // English anomaly catalog
       const anomalyCatalog = [
         {
-          tipo: 'Pico de Tensão',
+          tipo: 'Voltage Spike',
           canal: 'CAN_ECU_BattVoltage',
-          severidade: 'Crítica',
+          severidade: 'Critical',
           esperado_intervalo: '11.8V - 14.4V',
           gerarValor: () => +(16.2 + Math.random() * 1.8).toFixed(2),
           gerarDesc: (v) =>
-            'Sobretensão transiente de ' +
+            'Transient overvoltage of ' +
             v +
-            'V detectada no barramento de força da ECU. Violação da norma ISO 7637-2.',
+            'V detected on ECU power rail. Violation of ISO 7637-2 standard.',
         },
         {
-          tipo: 'Falha de Sincronização',
+          tipo: 'Sync Loss',
           canal: 'CAN_WheelSpeed_FL',
-          severidade: 'Alta',
+          severidade: 'High',
           esperado_intervalo: 'Delta t < 20ms',
           gerarValor: () => 0.0,
           gerarDesc: () =>
-            'Perda de quadro cíclico (frame drop). Atraso inter-frame > 120ms detectado no sensor de velocidade.',
+            'Cyclic frame drop. Inter-frame delay > 120ms detected on wheel speed sensor.',
         },
         {
-          tipo: 'Valor Fora do Intervalo',
+          tipo: 'Out of Range',
           canal: 'CAN_EngineCoolant_Temp',
-          severidade: 'Média',
+          severidade: 'Medium',
           esperado_intervalo: '60.0°C - 100.0°C',
           gerarValor: () => +(108.5 + Math.random() * 14.2).toFixed(1),
           gerarDesc: (v) =>
-            'Sinal de temperatura atingiu ' +
+            'Coolant temperature reached ' +
             v +
-            '°C, excedendo o limiar operacional seguro do software de powertrain.',
+            '°C, exceeding safe operating envelope of powertrain software.',
         },
         {
-          tipo: 'Ruído Excessivo',
+          tipo: 'High Noise',
           canal: 'LIN_SteeringSensor_Angle',
-          severidade: 'Baixa',
-          esperado_intervalo: 'SNR > 18dB (desvio < 0.8°)',
+          severidade: 'Low',
+          esperado_intervalo: 'SNR > 18dB (jitter < 0.8°)',
           gerarValor: () => +(4.2 + Math.random() * 3.5).toFixed(1),
           gerarDesc: (v) =>
-            'Variação de alta frequência com desvio padrão de ' +
+            'High-frequency oscillation with standard deviation of ' +
             v +
-            '° no ângulo de direção indicando interferência eletromagnética (EMI).',
+            '° on steering angle indicating electromagnetic interference (EMI).',
         },
       ]
 
@@ -159,23 +159,23 @@ routerAdd(
         if (s === 4) {
           val = 16.7
           isAnomaly = true
-          anomalyType = 'Pico de Tensão'
-          anomalySev = 'Crítica'
+          anomalyType = 'Voltage Spike'
+          anomalySev = 'Critical'
         } else if (s === 10) {
           val = 9.8
           isAnomaly = true
-          anomalyType = 'Falha de Sincronização'
-          anomalySev = 'Alta'
+          anomalyType = 'Sync Loss'
+          anomalySev = 'High'
         } else if (s === 16) {
           val = 14.85
           isAnomaly = true
-          anomalyType = 'Valor Fora do Intervalo'
-          anomalySev = 'Média'
+          anomalyType = 'Out of Range'
+          anomalySev = 'Medium'
         } else if (s === 21) {
           val = 13.92
           isAnomaly = true
-          anomalyType = 'Ruído Excessivo'
-          anomalySev = 'Baixa'
+          anomalyType = 'High Noise'
+          anomalySev = 'Low'
         }
 
         timeSeries.push({
@@ -220,56 +220,56 @@ routerAdd(
         } catch (_) {}
       }
 
-      // 8. Auto-generate Verification Report if requested
+      // 8. Auto-generate Verification Report in English
       let createdReportId = null
       if (autoReport) {
-        const reportTitle = 'Relatório de Verificação — ' + analysisName
-        const reportBody = `# RELATÓRIO DE VERIFICAÇÃO DE TELEMETRIA VEICULAR
-Projeto Telemetry Insight | GlobalLogic Measurement Analytics POC
-Data de Execução: ${new Date().toISOString().replace('T', ' ').substring(0, 19)} UTC
-Usuário: ${authRecord.getString('name') || authRecord.getString('email')}
+        const reportTitle = 'Verification Report — ' + analysisName
+        const reportBody = `# VEHICLE TELEMETRY VERIFICATION REPORT
+Telemetry Insight Project | GlobalLogic Measurement Analytics POC
+Execution Date: ${new Date().toISOString().replace('T', ' ').substring(0, 19)} UTC
+User: ${authRecord.getString('name') || authRecord.getString('email')}
 
 ================================================================================
-1. METADADOS DO RUN DE VERIFICAÇÃO
+1. VERIFICATION RUN METADATA
 ================================================================================
-- Análise: ${analysisName}
-- Arquivo de Entrada: ${fileName}
-- Protocolo Detectado: ${resumoLimpeza.protocolo_detectado}
-- Frequência de Amostragem: ${resumoLimpeza.frequencia_amostragem}
-- Tolerância IQR: ${iqrMultiplier}x
-- Tempo de Processamento: ${elapsedSeconds}s
-- Precisão Global Estimada: ${Math.round(modelPrecision * 100)}%
+- Analysis: ${analysisName}
+- Input File: ${fileName}
+- Detected Protocol: ${resumoLimpeza.protocolo_detectado}
+- Sampling Rate: ${resumoLimpeza.frequencia_amostragem}
+- IQR Tolerance: ${iqrMultiplier}x
+- Processing Time: ${elapsedSeconds}s
+- Global Model Precision: ${Math.round(modelPrecision * 100)}%
 
 ================================================================================
-2. RESUMO DE LIMPEZA & NORMALIZAÇÃO (ETL)
+2. DATA CLEANING & NORMALIZATION SUMMARY (ETL)
 ================================================================================
-- Linhas Ingeridas Brutas: ${totalLines.toLocaleString('pt-BR')}
-- Linhas Válidas Limpas: ${cleanedLines.toLocaleString('pt-BR')}
-- Outliers Filtrados (IQR): ${outliersCount}
-- Timestamps Normalizados: ${totalLines.toLocaleString('pt-BR')}
-- Valores Faltantes Imputados: ${missingImputed}
-- Tempo de Parsing: ${parseTimeMs}ms
+- Raw Ingested Frames: ${totalLines.toLocaleString('en-US')}
+- Valid Cleaned Frames: ${cleanedLines.toLocaleString('en-US')}
+- Outliers Filtered (IQR): ${outliersCount}
+- Timestamps Normalized: ${totalLines.toLocaleString('en-US')}
+- Imputed Missing Values: ${missingImputed}
+- Parsing Duration: ${parseTimeMs}ms
 
 ================================================================================
-3. CLASSIFICAÇÃO DE ANOMALIAS DETECTADAS (${detectedAnomalies.length} EVENTOS)
+3. DETECTED ANOMALIES CLASSIFICATION (${detectedAnomalies.length} EVENTS)
 ================================================================================
 ${detectedAnomalies
   .map(
-    (a, i) => `[${i + 1}] Timestamp: ${a.timestamp} | Canal: ${a.canal}
-    Tipo: ${a.tipo} | Severidade: ${a.severidade.toUpperCase()} | Confiança: ${Math.round(a.confianca * 100)}%
-    Valor Medido: ${a.valor_medido} (Envelope Nominal: ${a.esperado_intervalo})
-    Diagnóstico: ${a.descricao}
+    (a, i) => `[${i + 1}] Timestamp: ${a.timestamp} | Channel: ${a.canal}
+    Type: ${a.tipo} | Severity: ${String(a.severidade).toUpperCase()} | Confidence: ${Math.round(a.confianca * 100)}%
+    Measured Value: ${a.valor_medido} (Nominal Range: ${a.esperado_intervalo})
+    Diagnostic: ${a.descricao}
 `,
   )
   .join('\n')}
 
 ================================================================================
-4. PARECER TÉCNICO DE VERIFICAÇÃO DE SOFTWARE VEICULAR
+4. SOFTWARE VERIFICATION TECHNICAL ASSESSMENT
 ================================================================================
-A verificação automatizada indicou conformidade de 99.4% no barramento nominal, porém
-com eventos críticos de instabilidade de sinal que violam critérios de aceitação para
-testes HIL/SIL. Recomenda-se calibração nos parâmetros de rejeição de ruído da ECU e
-validação da taxa de amostragem no barramento CAN.
+Automated verification revealed 99.4% nominal bus conformance. However, transient
+signal spikes violate software verification acceptance criteria for HIL/SIL
+testing. Calibration of ECU noise rejection thresholds and wheel speed jitter
+tolerance is recommended prior to firmware sign-off.
 `
 
         const relatorio = new Record(relatoriosCol)
@@ -291,7 +291,7 @@ validação da taxa de amostragem no barramento CAN.
       })
     } catch (err) {
       return e.json(500, {
-        error: 'Falha no pipeline de análise: ' + (err ? err.message : String(err)),
+        error: 'Telemetry analysis pipeline failed: ' + (err ? err.message : String(err)),
       })
     }
   },

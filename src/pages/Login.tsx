@@ -1,6 +1,16 @@
 import { useState } from 'react'
-import { useNavigate, Navigate } from 'react-router-dom'
-import { Eye, EyeOff, Radio, Cpu, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react'
+import { useNavigate, Navigate, Link } from 'react-router-dom'
+import {
+  Eye,
+  EyeOff,
+  Radio,
+  Cpu,
+  CheckCircle2,
+  AlertCircle,
+  ArrowRight,
+  Activity,
+  Sparkles,
+} from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { getErrorMessage } from '@/lib/pocketbase/errors'
 
@@ -33,22 +43,22 @@ export default function Login() {
         navigate('/')
       } else {
         if (!name.trim()) {
-          setErrorMessage('Por favor, informe seu nome completo.')
+          setErrorMessage('Please enter your full name.')
           setIsLoading(false)
           return
         }
         await register(name, email, password)
-        setSuccessMessage('Conta criada com sucesso! Redirecionando...')
+        setSuccessMessage('Account created successfully! Redirecting...')
         setTimeout(() => navigate('/'), 800)
       }
     } catch (err: unknown) {
       const msg = getErrorMessage(err)
       if (msg.includes('Failed to authenticate') || msg.includes('400')) {
-        setErrorMessage('E-mail ou senha inválidos. Verifique suas credenciais.')
+        setErrorMessage('Invalid email or password. Please verify your credentials.')
       } else if (msg.includes('already exists') || msg.includes('unique')) {
-        setErrorMessage('Este e-mail já está registrado na plataforma.')
+        setErrorMessage('This email is already registered.')
       } else {
-        setErrorMessage(msg || 'Falha ao autenticar. Tente novamente.')
+        setErrorMessage(msg || 'Authentication failed. Please try again.')
       }
     } finally {
       setIsLoading(false)
@@ -64,6 +74,20 @@ export default function Login() {
 
       {/* Main Container */}
       <div className="w-full max-w-md relative z-10">
+        {/* Top Live Demo Badge Shortcut */}
+        <div className="flex justify-center mb-6">
+          <Link
+            to="/demo"
+            className="group inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-xs font-semibold text-sky-400 transition-all shadow-md shadow-sky-500/10 hover:scale-105"
+          >
+            <Activity className="h-3.5 w-3.5 animate-pulse text-sky-400" />
+            <span>View Live Demo Simulation</span>
+            <span className="text-[10px] bg-sky-400/20 px-1.5 py-0.5 rounded text-sky-300 font-bold uppercase">
+              No login required
+            </span>
+          </Link>
+        </div>
+
         {/* Header Branding */}
         <div className="flex flex-col items-center text-center mb-8">
           <div className="h-14 w-14 rounded-2xl bg-gradient-to-tr from-[#0EA5E9] to-cyan-400 flex items-center justify-center text-white shadow-xl shadow-sky-500/20 mb-4 ring-4 ring-sky-500/20 animate-pulse">
@@ -73,11 +97,11 @@ export default function Login() {
             Telemetry Insight
           </h1>
           <p className="text-xs sm:text-sm font-medium text-sky-400 mt-1 uppercase tracking-wider">
-            POC de Análise de Telemetria Veicular
+            Vehicle Telemetry Verification POC
           </p>
           <p className="text-xs text-slate-400 mt-2 max-w-sm">
-            Ingestão de logs CAN/LIN, limpeza estatística IQR e detecção heurística de anomalias
-            para verificação de software.
+            CAN/LIN log ingestion, statistical IQR outlier filtering, and heuristic anomaly
+            detection for automotive software verification.
           </p>
         </div>
 
@@ -97,7 +121,7 @@ export default function Login() {
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              Entrar
+              Sign In
             </button>
             <button
               type="button"
@@ -111,7 +135,7 @@ export default function Login() {
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              Criar conta
+              Create Account
             </button>
           </div>
 
@@ -135,12 +159,12 @@ export default function Login() {
             {mode === 'register' && (
               <div>
                 <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Nome Completo
+                  Full Name
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Ex: Danilo Lima"
+                  placeholder="e.g. Danilo Lima"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0EA5E9] focus:border-transparent transition-all"
@@ -150,12 +174,12 @@ export default function Login() {
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                E-mail
+                Email
               </label>
               <input
                 type="email"
                 required
-                placeholder="seu.email@exemplo.com"
+                placeholder="your.email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0EA5E9] focus:border-transparent transition-all"
@@ -165,9 +189,9 @@ export default function Login() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                  Senha
+                  Password
                 </label>
-                <span className="text-[11px] text-slate-500">Mínimo 8 caracteres</span>
+                <span className="text-[11px] text-slate-500">Minimum 8 characters</span>
               </div>
               <div className="relative">
                 <input
@@ -182,25 +206,25 @@ export default function Login() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white focus:outline-none"
-                  aria-label={showPassword ? 'Ocultar senha' : 'Exibir senha'}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Credenciais de demonstração rápidas */}
+            {/* Quick Demo Credentials */}
             {mode === 'login' && (
               <div className="p-3 bg-slate-900/60 border border-slate-800 rounded-xl text-[11px] text-slate-400 space-y-1">
                 <div className="flex items-center gap-1.5 text-sky-400 font-semibold">
                   <Cpu className="h-3.5 w-3.5" />
-                  <span>Acesso Demo Pré-configurado:</span>
+                  <span>Pre-configured Demo Credentials:</span>
                 </div>
                 <p>
-                  Usuário: <span className="text-slate-200">danilolima45@hotmail.com</span>
+                  Username: <span className="text-slate-200">danilolima45@hotmail.com</span>
                 </p>
                 <p>
-                  Senha: <span className="text-slate-200">Skip@Pass</span>
+                  Password: <span className="text-slate-200">Skip@Pass</span>
                 </p>
               </div>
             )}
@@ -214,17 +238,28 @@ export default function Login() {
                 <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
-                  <span>{mode === 'login' ? 'Entrar' : 'Criar conta'}</span>
+                  <span>{mode === 'login' ? 'Sign In' : 'Create Account'}</span>
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}
             </button>
           </form>
+
+          {/* Direct link to public simulation */}
+          <div className="mt-5 pt-4 border-t border-slate-800/80 text-center">
+            <Link
+              to="/demo"
+              className="inline-flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 font-semibold transition-colors"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Or explore the Live CAN Simulation Demo &rarr;</span>
+            </Link>
+          </div>
         </div>
 
         {/* Portfolio note at bottom */}
         <p className="text-center text-xs text-slate-500 mt-6 leading-relaxed">
-          Projeto de portfólio — POC baseada na análise de oportunidade GlobalLogic.
+          Portfolio project — POC based on the GlobalLogic opportunity analysis.
         </p>
       </div>
     </div>

@@ -8,18 +8,18 @@ routerAdd(
   (e) => {
     const authRecord = e.auth
     if (!authRecord) {
-      return e.json(401, { error: 'Não autorizado.' })
+      return e.json(401, { error: 'Unauthorized.' })
     }
 
     const reportId = e.request.pathValue('id')
     if (!reportId) {
-      return e.json(400, { error: 'ID de relatório não informado.' })
+      return e.json(400, { error: 'Report ID not provided.' })
     }
 
     try {
       const relatorio = $app.findRecordById('relatorios', reportId)
       if (relatorio.getString('usuario_id') !== authRecord.id) {
-        return e.json(403, { error: 'Acesso negado a este relatório.' })
+        return e.json(403, { error: 'Access denied to this report.' })
       }
 
       const conteudo = relatorio.getString('conteudo')
@@ -34,7 +34,7 @@ routerAdd(
       })
     } catch (err) {
       return e.json(404, {
-        error: 'Relatório não encontrado: ' + (err ? err.message : String(err)),
+        error: 'Report not found: ' + (err ? err.message : String(err)),
       })
     }
   },

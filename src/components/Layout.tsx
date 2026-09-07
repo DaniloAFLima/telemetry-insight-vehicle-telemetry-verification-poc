@@ -1,14 +1,24 @@
 import { useState } from 'react'
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { Home, UploadCloud, Activity, FileText, LogOut, Menu, X, Gauge, Radio } from 'lucide-react'
+import {
+  Home,
+  UploadCloud,
+  Activity,
+  FileText,
+  LogOut,
+  Menu,
+  X,
+  Radio,
+  ExternalLink,
+} from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { path: '/', label: 'Início', icon: Home },
-  { path: '/upload', label: 'Enviar Logs', icon: UploadCloud },
-  { path: '/analises', label: 'Análises', icon: Activity },
-  { path: '/relatorios', label: 'Relatórios', icon: FileText },
+  { path: '/', label: 'Home', icon: Home },
+  { path: '/upload', label: 'Upload Logs', icon: UploadCloud },
+  { path: '/analises', label: 'Analyses', icon: Activity },
+  { path: '/relatorios', label: 'Reports', icon: FileText },
 ]
 
 export default function Layout() {
@@ -48,7 +58,7 @@ export default function Layout() {
                   Telemetry Insight
                 </span>
                 <span className="text-[11px] font-medium tracking-wide uppercase text-sky-400">
-                  POC de Verificação Veicular
+                  Vehicle Telemetry Verification POC
                 </span>
               </div>
             </div>
@@ -84,6 +94,20 @@ export default function Layout() {
                 </NavLink>
               )
             })}
+
+            {/* Public Live Demo shortcut */}
+            <div className="pt-3 mt-3 border-t border-slate-800/80">
+              <NavLink
+                to="/demo"
+                className="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-semibold text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 border border-sky-500/20 transition-all"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Public Live Simulation</span>
+                </div>
+                <ExternalLink className="h-3.5 w-3.5" />
+              </NavLink>
+            </div>
           </nav>
         </div>
 
@@ -95,7 +119,7 @@ export default function Layout() {
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-white truncate">
-                {user?.name || 'Engenheiro Veicular'}
+                {user?.name || 'Vehicle Engineer'}
               </p>
               <p className="text-xs text-slate-400 truncate">{user?.email}</p>
             </div>
@@ -105,7 +129,7 @@ export default function Layout() {
             className="w-full flex items-center justify-center gap-2 py-2 px-3 text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-md transition-colors"
           >
             <LogOut className="h-3.5 w-3.5" />
-            <span>Sair</span>
+            <span>Sign Out</span>
           </button>
         </div>
       </aside>
@@ -116,7 +140,7 @@ export default function Layout() {
           <button
             onClick={() => setMobileDrawerOpen(true)}
             className="p-2 text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 focus:outline-none"
-            aria-label="Abrir menu"
+            aria-label="Open navigation menu"
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -126,13 +150,21 @@ export default function Layout() {
           </div>
         </div>
 
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-1.5 text-xs font-medium text-rose-400 hover:text-rose-300 px-2.5 py-1.5 rounded-md hover:bg-rose-500/10 transition-colors"
-        >
-          <LogOut className="h-4 w-4" />
-          <span className="hidden sm:inline">Sair</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <NavLink
+            to="/demo"
+            className="text-[11px] font-semibold text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2.5 py-1 rounded-md"
+          >
+            Live Demo
+          </NavLink>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 text-xs font-medium text-rose-400 hover:text-rose-300 px-2 py-1 rounded-md hover:bg-rose-500/10 transition-colors"
+            aria-label="Sign out"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
+        </div>
       </header>
 
       {/* Slide-in Drawer for Tablet / Mobile Navigation */}
@@ -148,17 +180,17 @@ export default function Layout() {
               <div className="flex items-center justify-between pb-4 border-b border-slate-800">
                 <div className="flex items-center gap-2.5">
                   <div className="h-8 w-8 rounded-lg bg-sky-500 flex items-center justify-center text-white">
-                    <Gauge className="h-4 w-4" />
+                    <Radio className="h-4 w-4" />
                   </div>
                   <div>
                     <h2 className="text-sm font-bold">Telemetry Insight</h2>
-                    <p className="text-[10px] text-sky-400 uppercase">POC de Verificação</p>
+                    <p className="text-[10px] text-sky-400 uppercase">Verification POC</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setMobileDrawerOpen(false)}
                   className="p-1 text-slate-400 hover:text-white rounded-lg"
-                  aria-label="Fechar menu"
+                  aria-label="Close navigation menu"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -188,6 +220,17 @@ export default function Layout() {
                     </NavLink>
                   )
                 })}
+
+                <div className="pt-2">
+                  <NavLink
+                    to="/demo"
+                    onClick={() => setMobileDrawerOpen(false)}
+                    className="flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold text-sky-400 bg-sky-500/10 border border-sky-500/20 mt-2"
+                  >
+                    <span>Public Live Demo</span>
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </NavLink>
+                </div>
               </nav>
             </div>
 
@@ -199,7 +242,7 @@ export default function Layout() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-white truncate">
-                    {user?.name || 'Engenheiro Veicular'}
+                    {user?.name || 'Vehicle Engineer'}
                   </p>
                   <p className="text-xs text-slate-400 truncate">{user?.email}</p>
                 </div>
@@ -209,7 +252,7 @@ export default function Layout() {
                 className="w-full flex items-center justify-center gap-2 py-2 text-xs font-semibold text-rose-400 bg-rose-500/10 rounded-lg hover:bg-rose-500/20"
               >
                 <LogOut className="h-3.5 w-3.5" />
-                <span>Sair da conta</span>
+                <span>Sign Out</span>
               </button>
             </div>
           </div>
