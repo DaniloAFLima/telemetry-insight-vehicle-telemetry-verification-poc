@@ -1,6 +1,24 @@
 # Telemetry Insight — Vehicle Telemetry Verification POC
 
-An enterprise-grade Automotive Telemetry Verification & Data Cleaning Proof-of-Concept (POC) designed for modern connected vehicles and ECU software verification. The platform ingests raw CAN/LIN bus logs, executes real-time IQR-based data cleaning and timestamp synchronization, classifies transient anomalies (voltage spikes, sync loss, out-of-range sensor values, electromagnetic noise), and provides time-series dashboards, side-by-side comparison matrices, AI verification diagnostic summaries, and exportable engineering verification reports.
+An enterprise-grade Automotive Telemetry Verification & Data Cleaning Proof-of-Concept (POC) designed for modern connected vehicles and ECU software verification.
+
+## Screenshots
+
+### Verification Dashboard
+![Dashboard](src/assets/image-b8186.png)
+*Verification dashboard with real-time KPIs and anomaly trends*
+
+### Public Portfolio Demo Hero
+![Demo Hero](src/assets/image-e28b0.png)
+*Public portfolio demo page at /demo, tailored to the GlobalLogic opportunity*
+
+### Live CAN Telemetry Simulation
+![Live CAN Simulation](src/assets/image-4b0fe.png)
+*Live CAN telemetry stream simulation with statistical anomaly detection*
+
+---
+
+The platform ingests raw CAN/LIN bus logs, executes real-time IQR-based data cleaning and timestamp synchronization, classifies transient anomalies (voltage spikes, sync loss, out-of-range sensor values, electromagnetic noise), and provides time-series dashboards, side-by-side comparison matrices, AI verification diagnostic summaries, and exportable engineering verification reports.
 
 > **Portfolio Project:** Designed by Danilo Lima for the **GlobalLogic AI Developer & Data Scientist** role (focus on connected vehicle measurement analytics, embedded protocol parsing, and predictive anomaly classification).
 
