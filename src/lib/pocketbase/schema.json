@@ -1,0 +1,263 @@
+{
+  "generatedAt": "2026-09-07T17:45:57.244Z",
+  "collections": [
+    {
+      "name": "users",
+      "type": "auth",
+      "apiRules": {
+        "list": "id = @request.auth.id",
+        "view": "id = @request.auth.id",
+        "create": "",
+        "update": "id = @request.auth.id",
+        "delete": "id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "avatar",
+          "type": "file",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX `idx_tokenKey__pb_users_auth_` ON `users` (`tokenKey`)",
+        "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
+      ]
+    },
+    {
+      "name": "logs",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != '' && usuario_id = @request.auth.id",
+        "view": "@request.auth.id != '' && usuario_id = @request.auth.id",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != '' && usuario_id = @request.auth.id",
+        "delete": "@request.auth.id != '' && usuario_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "usuario_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "nome_arquivo",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "formato",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["auto", "can_lin", "csv"]
+        },
+        {
+          "name": "arquivo",
+          "type": "file",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "linhas_processadas",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "anomalias_detectadas",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "criado",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "atualizado",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_logs_usuario ON logs (usuario_id)",
+        "CREATE INDEX idx_logs_criado ON logs (criado DESC)"
+      ]
+    },
+    {
+      "name": "analises",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != '' && usuario_id = @request.auth.id",
+        "view": "@request.auth.id != '' && usuario_id = @request.auth.id",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != '' && usuario_id = @request.auth.id",
+        "delete": "@request.auth.id != '' && usuario_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "usuario_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "log_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "logs"
+        },
+        {
+          "name": "nome",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["processando", "concluida", "erro"]
+        },
+        {
+          "name": "tempo_processamento_s",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "precisao_modelo",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "resumo_limpeza",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "anomalias",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "dados_serie_temporal",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "criado",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "atualizado",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_analises_usuario ON analises (usuario_id)",
+        "CREATE INDEX idx_analises_status ON analises (status)",
+        "CREATE INDEX idx_analises_criado ON analises (criado DESC)"
+      ]
+    },
+    {
+      "name": "relatorios",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != '' && usuario_id = @request.auth.id",
+        "view": "@request.auth.id != '' && usuario_id = @request.auth.id",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != '' && usuario_id = @request.auth.id",
+        "delete": "@request.auth.id != '' && usuario_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "usuario_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "analise_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "analises"
+        },
+        {
+          "name": "titulo",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "conteudo",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "criado",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "atualizado",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_relatorios_usuario ON relatorios (usuario_id)",
+        "CREATE INDEX idx_relatorios_analise ON relatorios (analise_id)"
+      ]
+    }
+  ]
+}
