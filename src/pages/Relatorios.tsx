@@ -7,12 +7,16 @@ import {
   FileCheck,
   ExternalLink,
   Printer,
+  Sparkles,
+  Bot,
 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { listRelatorios, deleteRelatorio } from '@/services/relatorios'
 import type { RelatorioRecord } from '@/types/telemetry'
 import { toast } from '@/hooks/use-toast'
 
 export default function RelatoriosPage() {
+  const navigate = useNavigate()
   const [relatorios, setRelatorios] = useState<RelatorioRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedRelatorio, setSelectedRelatorio] = useState<RelatorioRecord | null>(null)
@@ -199,6 +203,38 @@ export default function RelatoriosPage() {
                     </button>
                   </div>
                 </div>
+
+                {/* AI Summary Badge / Quick link banner if present */}
+                {selectedRelatorio.conteudo.includes('AI DIAGNOSTIC SUMMARY') ? (
+                  <div className="bg-gradient-to-r from-sky-950 to-slate-900 border-b border-sky-800/50 px-6 py-3 flex items-center justify-between text-xs text-sky-200">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-sky-400 shrink-0" />
+                      <span>Includes Skip Cloud Native Agent Diagnostic Summary</span>
+                    </div>
+                    {selectedRelatorio.analise_id && (
+                      <button
+                        onClick={() => navigate(`/analises/${selectedRelatorio.analise_id}`)}
+                        className="inline-flex items-center gap-1 text-sky-300 hover:text-white font-medium hover:underline"
+                      >
+                        <span>View Analysis</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
+                ) : selectedRelatorio.analise_id ? (
+                  <div className="bg-slate-100 border-b border-slate-200 px-6 py-2.5 flex items-center justify-between text-xs text-slate-600">
+                    <div className="flex items-center gap-2">
+                      <Bot className="h-3.5 w-3.5 text-slate-400" />
+                      <span>No AI diagnostic summary generated yet for this run.</span>
+                    </div>
+                    <button
+                      onClick={() => navigate(`/analises/${selectedRelatorio.analise_id}`)}
+                      className="text-sky-600 hover:text-sky-700 font-semibold hover:underline"
+                    >
+                      Open in Analysis to Generate AI Summary →
+                    </button>
+                  </div>
+                ) : null}
 
                 {/* Viewer Content */}
                 <div className="p-6 sm:p-8 font-mono text-xs sm:text-sm text-slate-800 leading-relaxed overflow-x-auto whitespace-pre-wrap bg-slate-50/30 max-h-[700px] overflow-y-auto">

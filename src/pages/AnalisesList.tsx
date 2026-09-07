@@ -10,6 +10,8 @@ import {
   AlertTriangle,
   FileText,
   Search,
+  GitCompare,
+  X,
 } from 'lucide-react'
 import { listAnalises, processLogPipeline } from '@/services/analises'
 import type { AnaliseRecord } from '@/types/telemetry'
@@ -22,6 +24,7 @@ export default function AnalisesList() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [runningDemo, setRunningDemo] = useState(false)
+  const [selectedForCompare, setSelectedForCompare] = useState<string[]>([])
 
   const loadData = async () => {
     try {
@@ -71,6 +74,36 @@ export default function AnalisesList() {
     }
   }
 
+  const toggleSelectForCompare = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setSelectedForCompare((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter((item) => item !== id)
+      }
+      if (prev.length >= 2) {
+        toast({
+          title: 'Maximum 2 analyses',
+          description:
+            'You can compare exactly 2 analyses at a time. Replacing the earliest selection.',
+        })
+        return [prev[1], id]
+      }
+      return [...prev, id]
+    })
+  }
+
+  const handleLaunchCompare = () => {
+    if (selectedForCompare.length !== 2) {
+      toast({
+        title: 'Select 2 analyses',
+        description: 'Please select exactly two analyses using the checkboxes to compare them.',
+        variant: 'destructive',
+      })
+      return
+    }
+    navigate(`/analises/compare?a=${selectedForCompare[0]}&b=${selectedForCompare[1]}`)
+  }
+
   const filteredAnalises = analises.filter((item) =>
     item.nome.toLowerCase().includes(searchTerm.toLowerCase()),
   )
@@ -88,7 +121,16 @@ export default function AnalisesList() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {selectedForCompare.length === 2 && (
+            <button
+              onClick={handleLaunchCompare}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white text-sm font-semibold shadow-md shadow-sky-500/25 transition-all hover:scale-[1.02] active:scale-[0.98] animate-pulse"
+            >
+              <GitCompare className="h-4 w-4 text-white" />
+              <span>Compare Selected (2)</span>
+            </button>
+          )}
           <button
             onClick={() => navigate('/upload')}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0EA5E9] hover:bg-[#0284C7] text-white text-sm font-semibold shadow-md shadow-sky-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -106,6 +148,38 @@ export default function AnalisesList() {
           </button>
         </div>
       </div>
+
+      {/* Floating compare banner when items are selected */}
+      {selectedForCompare.length > 0 && (
+        <div className="bg-sky-50 border border-sky-200 rounded-xl p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-2.5 text-xs text-sky-900 font-medium">
+            <GitCompare className="h-4 w-4 text-sky-600 shrink-0" />
+            <span>
+              <strong>{selectedForCompare.length} of 2</strong> analyses selected for side-by-side
+              comparison.
+              {selectedForCompare.length === 1 && ' Select one more run to launch comparison.'}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {selectedForCompare.length === 2 && (
+              <button
+                onClick={handleLaunchCompare}
+                className="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition-all shadow-xs"
+              >
+                Launch Side-by-Side View →
+              </button>
+            )}
+            <button
+              onClick={() => setSelectedForCompare([])}
+              className="p-1.5 text-slate-400 hover:text-slate-600 transition-colors"
+              title="Clear selection"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Filter / Search Bar */}
       <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-slate-200 shadow-xs max-w-md">
@@ -159,33 +233,52 @@ export default function AnalisesList() {
                 className="bg-white rounded-2xl border border-[#E2E8F0] p-5 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col justify-between group"
               >
                 <div>
-                  {/* Card top */}
+                  {/* Card top with Compare Checkbox */}
                   <div className="flex items-start justify-between gap-2 mb-3">
-                    <span
-                      className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full ${
-                        hasAnomalies
-                          ? 'bg-rose-50 text-rose-700 border border-rose-200/80'
-                          : 'bg-emerald-50 text-emerald-700 border border-emerald-200/80'
-                      }`}
-                    >
-                      {hasAnomalies ? (
-                        <>
-                          <AlertTriangle className="h-3 w-3 text-rose-600" />
-                          <span>
-                            {anomCount} Anomal{anomCount === 1 ? 'y' : 'ies'}
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle2 className="h-3 w-3 text-emerald-600" />
-                          <span>Conforming</span>
-                        </>
-                      )}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <label
+                        onClick={(e) => toggleSelectForCompare(item.id, e)}
+                        className={`flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-md cursor-pointer select-none transition-all ${
+                          selectedForCompare.includes(item.id)
+                            ? 'bg-sky-600 text-white shadow-xs'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                        title="Select for comparison"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedForCompare.includes(item.id)}
+                          onChange={() => {}}
+                          className="h-3 w-3 rounded text-sky-600 focus:ring-sky-500 cursor-pointer pointer-events-none"
+                        />
+                        <span>Compare</span>
+                      </label>
+
+                      <span
+                        className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full ${
+                          hasAnomalies
+                            ? 'bg-rose-50 text-rose-700 border border-rose-200/80'
+                            : 'bg-emerald-50 text-emerald-700 border border-emerald-200/80'
+                        }`}
+                      >
+                        {hasAnomalies ? (
+                          <>
+                            <AlertTriangle className="h-3 w-3 text-rose-600" />
+                            <span>
+                              {anomCount} Anomal{anomCount === 1 ? 'y' : 'ies'}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+                            <span>Conforming</span>
+                          </>
+                        )}
+                      </span>
+                    </div>
 
                     <span className="text-[11px] text-slate-400 tabular-nums">{dateStr}</span>
                   </div>
-
                   <h3 className="font-bold text-base text-slate-900 group-hover:text-[#0EA5E9] transition-colors line-clamp-1 mb-1">
                     {item.nome}
                   </h3>

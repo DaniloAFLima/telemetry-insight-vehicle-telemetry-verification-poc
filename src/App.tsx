@@ -9,6 +9,7 @@ import Dashboard from '@/pages/Dashboard'
 import UploadPage from '@/pages/Upload'
 import AnalisesList from '@/pages/AnalisesList'
 import AnaliseDetail from '@/pages/AnaliseDetail'
+import AnaliseCompare from '@/pages/AnaliseCompare'
 import RelatoriosPage from '@/pages/Relatorios'
 import PublicDemo from '@/pages/PublicDemo'
 import NotFound from '@/pages/NotFound'
@@ -37,8 +38,9 @@ export default function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/upload" element={<UploadPage />} />
             <Route path="/analises" element={<AnalisesList />} />
+            <Route path="/analises/compare" element={<AnaliseCompare />} />
             <Route path="/analises/:id" element={<AnaliseDetail />} />
-            <Route path="/relatorios" element={<RelatoriosPage />} />
+            <Route path="/relatorios" element={<RelatoriosPage />} />{' '}
           </Route>
 
           {/* Catch-all 404 */}

@@ -18,6 +18,9 @@ import {
   ChevronRight,
   Zap,
   TrendingUp,
+  Linkedin,
+  Bot,
+  Sparkles,
 } from 'lucide-react'
 import {
   AreaChart,
@@ -281,47 +284,73 @@ export default function PublicDemo() {
       {/* Hero Section */}
       <section className="relative z-10 pt-12 pb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-slate-800 text-xs text-slate-300 shadow-inner">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/95 border border-sky-500/30 text-xs text-slate-300 shadow-lg shadow-sky-500/10">
             <ShieldCheck className="h-4 w-4 text-sky-400" />
-            <span className="font-semibold text-white">Portfolio Project</span>
+            <span className="font-semibold text-white">GlobalLogic Opportunity Showcase</span>
             <span className="text-slate-500">•</span>
-            <span className="text-slate-400">Aligned with GlobalLogic AI & Data Science Role</span>
+            <span className="text-sky-300">AI Developer & Data Scientist Role</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
             Automated Telemetry Verification for Connected Vehicles
           </h1>
 
-          <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
-            Turns diagnostic logs and raw CAN/LIN sensor streams into software verification
-            insights. Built with an end-to-end Python/TypeScript ETL pipeline, IQR outlier
-            filtering, and heuristic anomaly detection.
+          <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto">
+            Interactive web POC tackling the{' '}
+            <strong>Ecoride electric-bike telemetry verification challenge</strong>. Demonstrating
+            automated diagnostic log ingestion, statistical IQR outlier cleaning, and
+            machine-learning anomaly classification inspired by an enterprise
+            Python/Pandas/Scikit-learn stack.
           </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs text-slate-400">
+            <span className="px-2.5 py-1 rounded-md bg-slate-900/80 border border-slate-800 font-mono text-sky-300">
+              Python
+            </span>
+            <span className="px-2.5 py-1 rounded-md bg-slate-900/80 border border-slate-800 font-mono text-sky-300">
+              Pandas
+            </span>
+            <span className="px-2.5 py-1 rounded-md bg-slate-900/80 border border-slate-800 font-mono text-sky-300">
+              NumPy
+            </span>
+            <span className="px-2.5 py-1 rounded-md bg-slate-900/80 border border-slate-800 font-mono text-sky-300">
+              Scikit-learn
+            </span>
+            <span className="px-2.5 py-1 rounded-md bg-slate-900/80 border border-slate-800 font-mono text-sky-300">
+              Docker
+            </span>
+            <span className="px-2.5 py-1 rounded-md bg-slate-900/80 border border-slate-800 font-mono text-sky-300">
+              Django
+            </span>
+            <span className="px-2.5 py-1 rounded-md bg-slate-900/80 border border-slate-800 font-mono text-indigo-300">
+              Skip Cloud Native AI Agents
+            </span>
+          </div>
         </div>
 
         {/* 3 Key Metrics Pills */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto mt-8">
-          <div className="p-4 rounded-2xl bg-[#111827]/80 border border-slate-800/90 backdrop-blur-sm shadow-lg flex items-center gap-3.5">
+          <div className="p-4 rounded-2xl bg-[#111827]/80 border border-slate-800/90 backdrop-blur-sm shadow-lg flex items-center gap-3.5 hover:border-sky-500/40 transition-colors">
             <div className="h-11 w-11 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 shrink-0">
               <Cpu className="h-5 w-5" />
             </div>
             <div>
               <div className="text-xl sm:text-2xl font-extrabold text-white tabular-nums">~87%</div>
-              <div className="text-xs text-slate-400">Classifier Precision</div>
+              <div className="text-xs text-slate-400">Classification Accuracy</div>
             </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#111827]/80 border border-slate-800/90 backdrop-blur-sm shadow-lg flex items-center gap-3.5">
+          <div className="p-4 rounded-2xl bg-[#111827]/80 border border-slate-800/90 backdrop-blur-sm shadow-lg flex items-center gap-3.5 hover:border-amber-500/40 transition-colors">
             <div className="h-11 w-11 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
               <AlertTriangle className="h-5 w-5" />
             </div>
             <div>
               <div className="text-xl sm:text-2xl font-extrabold text-white tabular-nums">~5%</div>
-              <div className="text-xs text-slate-400">Anomalies Detected</div>
+              <div className="text-xs text-slate-400">Baseline Anomaly Rate</div>
             </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#111827]/80 border border-slate-800/90 backdrop-blur-sm shadow-lg flex items-center gap-3.5">
+          <div className="p-4 rounded-2xl bg-[#111827]/80 border border-slate-800/90 backdrop-blur-sm shadow-lg flex items-center gap-3.5 hover:border-emerald-500/40 transition-colors">
             <div className="h-11 w-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
               <CheckCircle2 className="h-5 w-5" />
             </div>
@@ -640,17 +669,20 @@ export default function PublicDemo() {
               <Database className="h-5 w-5" />
             </div>
             <h3 className="text-xl font-bold text-white tracking-tight">
-              Business Problem: Software Verification at Scale
+              Business Problem: Ecoride Telemetry Verification at Scale
             </h3>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Modern connected e-bikes and electric vehicles generate thousands of CAN/LIN bus
-              frames per second. Manual inspection of diagnostic logs for firmware and HIL/SIL
-              acceptance testing takes tens of engineering hours and is prone to human error.
+              Modern connected e-bikes (such as Ecoride smart powertrains) and electric vehicles
+              generate thousands of CAN/LIN bus frames per second. In standard engineering
+              workflows, manual inspection of diagnostic logs for firmware regressions and HIL/SIL
+              acceptance testing consumes days and risks missing transient voltage spikes and timing
+              jitter.
             </p>
             <p className="text-sm text-slate-400 leading-relaxed">
-              This proof of concept demonstrates how statistical IQR filtering and automated
-              classification models reduce manual triage by up to 40%, delivering instant
-              verification verdicts and exportable engineering reports.
+              This proof of concept demonstrates how automated statistical IQR filtering and machine
+              learning classification isolate transient faults (~5% anomaly rate) with ~87%
+              precision, cutting manual triage by up to 40% and generating instant engineering
+              verification reports.
             </p>
           </div>
 
@@ -660,37 +692,37 @@ export default function PublicDemo() {
               <Zap className="h-5 w-5" />
             </div>
             <h3 className="text-xl font-bold text-white tracking-tight">
-              Architecture & Core Tech Stack
+              Inspiration Stack: Python, Docker & Skip Cloud Agents
             </h3>
             <div className="grid grid-cols-2 gap-3 pt-1">
               <div className="p-3 bg-slate-900/70 border border-slate-800 rounded-xl">
-                <span className="text-[11px] text-sky-400 font-bold block">Python / ML Engine</span>
+                <span className="text-[11px] text-sky-400 font-bold block">
+                  Python Data Science
+                </span>
                 <span className="text-xs text-slate-300">
-                  Pandas, NumPy, Scikit-learn classification & IQR filtering
+                  Pandas, NumPy, Scikit-learn (RandomForest & IsolationForest), Django REST
                 </span>
               </div>
               <div className="p-3 bg-slate-900/70 border border-slate-800 rounded-xl">
                 <span className="text-[11px] text-indigo-400 font-bold block">
-                  Protocols Supported
+                  Deployment & Infra
                 </span>
                 <span className="text-xs text-slate-300">
-                  CAN 2.0B, CAN-FD, LIN 2.2, CSV diagnostic captures
+                  Docker containerized pipeline, CI/CD automated validation sweeps
                 </span>
               </div>
               <div className="p-3 bg-slate-900/70 border border-slate-800 rounded-xl">
                 <span className="text-[11px] text-emerald-400 font-bold block">
-                  Frontend & Charts
+                  Interactive Web POC
                 </span>
                 <span className="text-xs text-slate-300">
-                  React 18, TypeScript, Tailwind CSS, Recharts time-series
+                  React 18, TypeScript, Tailwind CSS, Recharts time-series & dual comparison
                 </span>
               </div>
               <div className="p-3 bg-slate-900/70 border border-slate-800 rounded-xl">
-                <span className="text-[11px] text-amber-400 font-bold block">
-                  Backend & Realtime
-                </span>
+                <span className="text-[11px] text-amber-400 font-bold block">Native AI Agent</span>
                 <span className="text-xs text-slate-300">
-                  PocketBase server hooks, automated verification reports
+                  Skip Cloud Native Agent producing natural-language diagnostic summaries
                 </span>
               </div>
             </div>
@@ -719,10 +751,29 @@ export default function PublicDemo() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800/80 py-8 px-4 text-center text-xs text-slate-500">
-        <p>Telemetry Insight — Vehicle Telemetry Verification POC</p>
-        <p className="mt-1">
-          Portfolio project based on GlobalLogic Opportunity Analysis • Ecoride Telemetry Case Study
+      <footer className="border-t border-slate-800/80 py-10 px-4 text-center text-xs text-slate-400 space-y-3">
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <span className="font-semibold text-white">
+            Created by <strong className="text-sky-400">Danilo Lima</strong>
+          </span>
+          <span className="text-slate-600">•</span>
+          <a
+            href="https://www.linkedin.com/in/danilo-lima"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-sky-400 hover:text-sky-300 font-medium transition-colors hover:underline"
+          >
+            <Linkedin className="h-3.5 w-3.5" />
+            <span>LinkedIn Profile</span>
+          </a>
+        </div>
+        <p className="text-slate-500">
+          Portfolio project — Telemetry Insight POC • Inspired by GlobalLogic AI Developer & Data
+          Scientist Opportunity (Ecoride Electric-Bike Verification Problem)
+        </p>
+        <p className="text-[11px] text-slate-600">
+          Python (Pandas, NumPy, Scikit-learn, Django), Docker, React + TypeScript & Skip Cloud
+          Native AI Agents.
         </p>
       </footer>
     </div>

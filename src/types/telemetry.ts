@@ -84,6 +84,7 @@ export interface AnaliseRecord extends RecordModel {
   resumo_limpeza?: CleaningSummary
   anomalias?: AnomalyItem[]
   dados_serie_temporal?: TimeSeriesPoint[]
+  ai_resumo?: string
   criado: string
   atualizado: string
 }
